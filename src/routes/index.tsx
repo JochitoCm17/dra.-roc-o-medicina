@@ -115,7 +115,7 @@ function Navbar() {
 function OpenCard() {
   const now = useNow();
   const open = now ? isOpenNow(now) : false;
-  const today = now ? config.hours[now.getDay()] : null;
+  const today = now ? config.hours[now.getDay()] ?? null : null;
   return (
     <div className="rounded-3xl border bg-card p-6 shadow-soft">
       <div className="flex items-center gap-3">
@@ -168,7 +168,7 @@ function Hero() {
   );
 }
 
-const icons = [Stethoscope, HeartPulse, ShieldCheck, Video, FileText];
+const icons: typeof Stethoscope[] = [Stethoscope, HeartPulse, ShieldCheck, Video, FileText];
 
 function SectionHead({ kicker, title }: { kicker: string; title: ReactNode }) {
   return (
@@ -180,8 +180,8 @@ function SectionHead({ kicker, title }: { kicker: string; title: ReactNode }) {
 }
 
 function Services() {
-  const [big, ...rest] = config.services;
-  const BigIcon = icons[0];
+  const [big, ...rest] = config.services as [typeof config.services[number], ...typeof config.services];
+  const BigIcon = Stethoscope;
   return (
     <section id="servicios" className="scroll-mt-28 px-4 py-24">
       <div className="mx-auto max-w-6xl">
@@ -196,7 +196,7 @@ function Services() {
             </div>
           </motion.article>
           {rest.map((s, i) => {
-            const Icon = icons[i + 1];
+            const Icon = icons[i + 1] ?? Stethoscope;
             return (
               <motion.article key={s.title} {...fade} transition={{ ...fade.transition, delay: 0.08 * (i + 1) }}
                 className="rounded-3xl border bg-card p-6 transition-transform hover:-translate-y-1">
@@ -246,7 +246,7 @@ function Profile() {
 }
 
 function Booking() {
-  const [form, setForm] = useState({ nombre: "", fecha: "", hora: "", servicio: config.services[0].title, mensaje: "" });
+  const [form, setForm] = useState({ nombre: "", fecha: "", hora: "", servicio: config.services[0]!.title, mensaje: "" });
   const set = (k: keyof typeof form) => (e: { target: { value: string } }) => setForm({ ...form, [k]: e.target.value });
   const submit = (e: FormEvent) => {
     e.preventDefault();

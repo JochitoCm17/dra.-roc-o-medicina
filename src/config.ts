@@ -51,6 +51,7 @@ export const config = {
 
 export function isOpenNow(d = new Date()) {
   const h = config.hours[d.getDay()];
+  if (!h) return false;
   if (!h.open || !h.close) return false;
   const mins = d.getHours() * 60 + d.getMinutes();
   const toM = (s: string) => +s.slice(0, 2) * 60 + +s.slice(3);
