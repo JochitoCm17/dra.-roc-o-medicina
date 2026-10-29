@@ -27,8 +27,8 @@
   --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
-  --color-coral: var(--coral);
-  --color-coral-foreground: var(--coral-foreground);
+  --color-gold: var(--gold);
+  --color-gold-foreground: var(--gold-foreground);
   --color-ink: var(--ink);
   --color-ink-foreground: var(--ink-foreground);
   --color-success: var(--success);
@@ -42,30 +42,30 @@
 
 :root {
   --radius: 1rem;
-  --background: oklch(0.973 0.008 180);          /* #F3F8F7 */
-  --foreground: oklch(0.28 0.05 225);            /* #0B2E3A */
+  --background: oklch(0.985 0.008 85);
+  --foreground: oklch(0.25 0.06 258);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.28 0.05 225);
+  --card-foreground: oklch(0.25 0.06 258);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.28 0.05 225);
-  --primary: oklch(0.52 0.09 200);               /* #127C82 */
-  --primary-foreground: oklch(0.99 0.005 180);
-  --secondary: oklch(0.93 0.025 185);
-  --secondary-foreground: oklch(0.28 0.05 225);
-  --muted: oklch(0.94 0.012 185);
-  --muted-foreground: oklch(0.45 0.035 220);
-  --accent: oklch(0.92 0.035 190);
-  --accent-foreground: oklch(0.28 0.05 225);
-  --coral: oklch(0.67 0.15 42);                  /* #E8714A */
-  --coral-foreground: oklch(0.99 0.005 60);
-  --ink: oklch(0.28 0.05 225);
+  --popover-foreground: oklch(0.25 0.06 258);
+  --primary: oklch(0.25 0.06 258);               /* #0E2340 */
+  --primary-foreground: oklch(0.99 0.005 85);
+  --secondary: oklch(0.955 0.02 85);
+  --secondary-foreground: oklch(0.25 0.06 258);
+  --muted: oklch(0.95 0.01 85);
+  --muted-foreground: oklch(0.45 0.03 258);
+  --accent: oklch(0.93 0.04 88);
+  --accent-foreground: oklch(0.25 0.06 258);
+  --gold: oklch(0.77 0.13 88);                    /* #D4AF37 */
+  --gold-foreground: oklch(0.25 0.06 258);
+  --ink: oklch(0.25 0.06 258);
   --ink-foreground: oklch(0.97 0.01 180);
   --success: oklch(0.65 0.15 155);
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.984 0.003 247.858);
-  --border: oklch(0.89 0.02 190);
-  --input: oklch(0.89 0.02 190);
-  --ring: oklch(0.52 0.09 200);
+  --border: oklch(0.9 0.02 85);
+  --input: oklch(0.88 0.02 85);
+  --ring: oklch(0.77 0.13 88);
   --shadow-soft: 0 20px 50px -20px color-mix(in oklab, var(--ink) 25%, transparent);
 }
 
@@ -92,9 +92,9 @@
 }
 
 :root {
-  --gradient-deep: linear-gradient(135deg, var(--ink) 0%, oklch(0.36 0.07 215) 55%, var(--primary) 100%);
-  --gradient-cta: linear-gradient(110deg, var(--primary), oklch(0.6 0.1 190), var(--ink), var(--primary));
-  --glow-primary: 0 0 0 1px color-mix(in oklab, var(--primary) 45%, transparent), 0 24px 60px -18px color-mix(in oklab, var(--primary) 55%, transparent);
+  --gradient-deep: linear-gradient(135deg, var(--ink) 0%, oklch(0.32 0.08 258) 60%, oklch(0.42 0.1 255) 100%);
+  --gradient-cta: linear-gradient(110deg, var(--primary), oklch(0.4 0.1 255), var(--gold), var(--primary));
+  --glow-primary: 0 0 0 1px color-mix(in oklab, var(--gold) 70%, transparent), 0 24px 60px -18px color-mix(in oklab, var(--gold) 55%, transparent);
   --shadow-nav: 0 12px 40px -12px color-mix(in oklab, var(--ink) 30%, transparent);
 }
 
@@ -129,12 +129,12 @@
 
 @utility field-teal {
   transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
-  &:hover { border-color: color-mix(in oklab, var(--primary) 45%, var(--border)); }
+  &:hover { border-color: color-mix(in oklab, var(--gold) 55%, var(--border)); }
   &:focus-visible {
     outline: none;
-    border-color: var(--primary);
+    border-color: var(--gold);
     background-color: var(--card);
-    box-shadow: 0 0 0 4px color-mix(in oklab, var(--primary) 18%, transparent);
+    box-shadow: 0 0 0 4px color-mix(in oklab, var(--gold) 25%, transparent);
   }
 }
 
