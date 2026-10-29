@@ -1,4 +1,4 @@
-// Todos los datos de la clínica viven aquí.
+// Todos los datos de la clínica viven aquí //
 import logoEmblem from "@/assets/leon-emblem.png.asset.json";
 import logoFull from "@/assets/leon-logo.png.asset.json";
 import rocioImg from "@/assets/dra-rocio.jpg";
@@ -11,30 +11,30 @@ export const config = {
     name: "Clínica León de Judá",
     fullName: "Clínica Médica y Odontológica León de Judá",
     slogan: "Tu salud, nuestra prioridad",
-    // Para cambiar el logo: reemplaza estas URLs por la imagen nueva.
-    logo: logoEmblem.url,
-    logoFull: logoFull.url,
-    credit: "Diseñado por JM Dev",
+    // Para cambiar el logo local: pon tu logo en public/logo.png y cambia estas variables por "/logo.png"
+    logo: logo.png,
+    logoFull: logo.png,
+    credit: "",
   },
   contact: {
-    phone: "+504 9999 9999",
-    whatsapp: "50499999999", // solo dígitos, con código de país (+504)
-    email: "contacto@clinicaleondejuda.hn",
+    phone: "+504 9588-2611",
+    whatsapp: "50495882611", // dígitos limpios para la API wa.me
+    email: "isaiestrda134@gmail.com",
     calUrl: "https://cal.com/clinica-leon-de-juda",
   },
   location: {
-    address: "Colonia Palmira, Avenida República de Chile, Edificio Médico, Local 3",
-    city: "Tegucigalpa, Honduras",
-    lat: 14.0943,
-    lng: -87.1872,
+    address: "Aldea Cerro Grande, calle principal, una cuadra adelante del Césamo Cerro Grande",
+    city: "Valle de Ángeles, Francisco Morazán, Honduras",
+    lat: 14.1534,
+    lng: -87.0356,
   },
   // 0 = domingo ... 6 = sábado. null = cerrado. Formato 24h "HH:MM".
   hours: [
     { day: "Domingo", open: null, close: null },
-    { day: "Lunes", open: "08:00", close: "18:00" },
-    { day: "Martes", open: "08:00", close: "18:00" },
-    { day: "Miércoles", open: "08:00", close: "18:00" },
-    { day: "Jueves", open: "08:00", close: "18:00" },
+    { day: "Lunes", open: "08:00", close: "17:00" },
+    { day: "Martes", open: "08:00", close: "17:00" },
+    { day: "Miércoles", open: "08:00", close: "17:00" },
+    { day: "Jueves", open: "08:00", close: "17:00" },
     { day: "Viernes", open: "08:00", close: "17:00" },
     { day: "Sábado", open: "08:00", close: "12:00" },
   ] as { day: string; open: string | null; close: string | null }[],
@@ -42,26 +42,26 @@ export const config = {
     {
       id: "medica" as AreaId,
       label: "Área Médica",
-      bookingLabel: "Consulta Médica - Dra. Rocío",
+      bookingLabel: "Consulta Médica - Dra. Rocío Méndez",
       doctorId: "rocio",
       services: [
         { title: "Consulta general", desc: "Evaluación integral, diagnóstico y plan de tratamiento personalizado." },
-        { title: "Chequeos preventivos", desc: "Exámenes periódicos y detección temprana." },
-        { title: "Condiciones crónicas", desc: "Manejo de diabetes, hipertensión y colesterol." },
-        { title: "Certificados médicos", desc: "Laborales, deportivos y de salud." },
+        { title: "Chequeos preventivos", desc: "Exámenes periódicos y detección temprana de padecimientos." },
+        { title: "Condiciones crónicas", desc: "Manejo de diabetes, hipertensión y control metabólico." },
+        { title: "Certificados médicos", desc: "Laborales, deportivos y de evaluación general." },
       ],
     },
     {
       id: "odontologica" as AreaId,
       label: "Área Odontológica",
-      bookingLabel: "Cita Odontológica - Dr. Eliud Murillo",
+      bookingLabel: "Cita Odontológica - Dr. Eliud Estrada",
       doctorId: "eliud",
       services: [
         { title: "Odontología general", desc: "Diagnóstico, prevención y tratamiento para toda la familia." },
         { title: "Limpieza ultrasónica", desc: "Remoción profunda de sarro sin molestias." },
-        { title: "Blanqueamiento", desc: "Una sonrisa más luminosa de forma segura." },
-        { title: "Resinas estéticas", desc: "Restauraciones del color natural de tu diente." },
-        { title: "Salud oral integral", desc: "Seguimiento y hábitos para encías y dientes sanos." },
+        { title: "Blanqueamiento dental", desc: "Tratamientos estéticos para una sonrisa más luminosa." },
+        { title: "Resinas estéticas", desc: "Restauraciones estéticas del color natural de tu diente." },
+        { title: "Salud oral integral", desc: "Cuidado de encías y prevención de afecciones dentales." },
       ],
     },
   ],
@@ -71,23 +71,23 @@ export const config = {
       name: "Dra. Rocío Méndez",
       specialty: "Medicina General e Interna",
       photo: rocioImg,
-      bio: "Atención cercana y sin prisas, con planes pensados para la vida real de cada paciente.",
-      credentials: ["Doctora en Medicina y Cirugía — UNAH", "Especialidad en Medicina Interna", "Colegio Médico de Honduras No. 00000"],
+      bio: "Atención médica cercana, humana y sin prisas, enfocada en la prevención y bienestar integral.",
+      credentials: ["Doctora en Medicina y Cirugía — UNAH", "Atención Médica Integral", "Colegio Médico de Honduras"],
       stats: [
         { value: "15+", label: "años de experiencia" },
-        { value: "8,000+", label: "pacientes" },
+        { value: "8,000+", label: "pacientes atendidos" },
       ],
     },
     {
       id: "eliud",
-      name: "Dr. Eliud Murillo",
+      name: "Dr. Eliud Estrada",
       specialty: "Odontología Integral y Estética Dental",
       photo: eliudImg,
-      bio: "Tratamientos cómodos y modernos para que sonrías con confianza en cada etapa de tu vida.",
-      credentials: ["Doctor en Cirugía Dental — UNAH", "Diplomado en Estética Dental", "Colegio de Cirujanos Dentistas de Honduras No. 0000"],
+      bio: "Tratamientos dentales modernos y cómodos para devolver la salud y la estética a tu sonrisa.",
+      credentials: ["Doctor en Cirugía Dental — UNAH", "Estética y Salud Oral", "Colegio de Cirujanos Dentistas de Honduras"],
       stats: [
         { value: "10+", label: "años de experiencia" },
-        { value: "5,000+", label: "sonrisas atendidas" },
+        { value: "5,000+", label: "sonrisas cuidadas" },
       ],
     },
   ],
