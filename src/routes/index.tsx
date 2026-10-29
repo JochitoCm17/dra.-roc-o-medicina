@@ -14,10 +14,11 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { config, isOpenNow, buildWhatsAppMessage, waLink, getArea, type AreaId } from "@/config";
+import { ChatWidget } from "@/components/ui/ChatWidget";
 
 const { brand } = config;
 const title = `${brand.fullName} — ${brand.slogan}`;
-const desc = `Medicina general e interna y odontología integral en ${config.location.city}. Agenda tu cita por WhatsApp con la Dra. Rocío o el Dr. Eliud Murillo.`;
+const desc = `Medicina general y odontología integral en ${config.location.city}. Agenda tu cita por WhatsApp con la Dra. Rocío Murillo o el Dr. Eliud Estrada.`;
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -64,6 +65,8 @@ function Index() {
       </main>
       <Footer />
       <FloatingWhatsApp />
+      {/* Mini Robot Asistente IA DocBot */}
+      <ChatWidget />
     </MotionConfig>
   );
 }
@@ -85,7 +88,7 @@ function FloatingWhatsApp() {
       aria-label="Escribir por WhatsApp"
       aria-hidden={hidden}
       tabIndex={hidden ? -1 : 0}
-      className={`animate-glow fixed bottom-5 right-5 z-50 grid size-14 place-items-center rounded-full bg-success text-primary-foreground shadow-soft transition-all duration-300 md:hidden ${hidden ? "pointer-events-none translate-y-4 opacity-0" : ""}`}
+      className={`animate-glow fixed bottom-5 left-5 z-40 grid size-14 place-items-center rounded-full bg-success text-primary-foreground shadow-soft transition-all duration-300 md:hidden ${hidden ? "pointer-events-none translate-y-4 opacity-0" : ""}`}
     >
       <MessageCircle className="size-7" />
     </a>
@@ -199,7 +202,7 @@ function Hero() {
             Tu salud, <em className="text-gold">nuestra</em> prioridad.
           </motion.h1>
           <motion.p variants={item} className="mt-6 max-w-lg text-lg text-muted-foreground">
-            Medicina general e interna y odontología integral en un mismo lugar, en {config.location.city}. Atención cálida, moderna y profesional para toda tu familia.
+            Medicina general y odontología integral en un mismo lugar, en {config.location.city}. Atención cálida, moderna y profesional para toda tu familia.
           </motion.p>
           <motion.div variants={item} className="mt-9 flex flex-wrap gap-3">
             <CtaButton href="#cita"><CalendarCheck className="size-4" /> Agendar cita</CtaButton>
@@ -486,7 +489,7 @@ function Footer() {
               <p className="text-xs text-gold">{brand.slogan}</p>
             </div>
           </div>
-          <p className="mt-4 text-sm opacity-70">Medicina general e interna y odontología integral en {config.location.city}.</p>
+          <p className="mt-4 text-sm opacity-70">Medicina general y odontología integral en {config.location.city}.</p>
         </motion.div>
         <motion.div variants={item}>
           <p className="mb-3 text-sm font-semibold text-gold">Navegación</p>
