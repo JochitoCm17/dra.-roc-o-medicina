@@ -39,7 +39,7 @@ export const config = {
     {
       id: "medica" as AreaId,
       label: "Área Médica",
-      bookingLabel: "Consulta Médica - Dra. Rocío Méndez",
+      bookingLabel: "Consulta Médica - Dra. Rocío Murillo",
       doctorId: "rocio",
       services: [
         { title: "Consulta general", desc: "Evaluación integral, diagnóstico y plan de tratamiento personalizado." },
