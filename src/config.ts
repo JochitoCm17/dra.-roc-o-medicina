@@ -1,6 +1,4 @@
 // Todos los datos de la clínica viven aquí //
-import logoEmblem from "@/assets/leon-emblem.png.asset.json";
-import logoFull from "@/assets/leon-logo.png.asset.json";
 import rocioImg from "@/assets/dra-rocio.jpg";
 import eliudImg from "@/assets/dr-eliud.jpg";
 
@@ -11,14 +9,14 @@ export const config = {
     name: "Clínica León de Judá",
     fullName: "Clínica Médica y Odontológica León de Judá",
     slogan: "Tu salud, nuestra prioridad",
-    // Para cambiar el logo local: pon tu logo en public/logo.png y cambia estas variables por "/logo.png"
-    logo: logo.png,
-    logoFull: logo.png,
-    credit: "",
+    // Ponemos la ruta directa en texto sin usar .url
+    logo: "/logo.png",
+    logoFull: "/logo.png",
+    credit: "Diseñado por JM Dev",
   },
   contact: {
     phone: "+504 9588-2611",
-    whatsapp: "50495882611", // dígitos limpios para la API wa.me
+    whatsapp: "50495882611",
     email: "isaiestrda134@gmail.com",
     calUrl: "https://cal.com/clinica-leon-de-juda",
   },
@@ -28,7 +26,6 @@ export const config = {
     lat: 14.1534,
     lng: -87.0356,
   },
-  // 0 = domingo ... 6 = sábado. null = cerrado. Formato 24h "HH:MM".
   hours: [
     { day: "Domingo", open: null, close: null },
     { day: "Lunes", open: "08:00", close: "17:00" },
@@ -86,7 +83,7 @@ export const config = {
       bio: "Tratamientos dentales modernos y cómodos para devolver la salud y la estética a tu sonrisa.",
       credentials: ["Doctor en Cirugía Dental — UNAH", "Estética y Salud Oral", "Colegio de Cirujanos Dentistas de Honduras"],
       stats: [
-        { value: "10+", label: "años de experiencia" },
+        { value: "10+", label: "años de experience" },
         { value: "5,000+", label: "sonrisas cuidadas" },
       ],
     },
