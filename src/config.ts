@@ -15,7 +15,7 @@ export const config = {
     credit: "Diseñado por JM Dev",
   },
   contact: {
-    phone: "+504 9588-2611",
+    phone: "9588-2611",
     whatsapp: "50495882611",
     email: "isaiestrda134@gmail.com",
     calUrl: "https://cal.com/clinica-leon-de-juda",
@@ -79,7 +79,7 @@ export const config = {
       id: "eliud",
       name: "Dr. Eliud Estrada",
       specialty: "Odontología Integral y Estética Dental",
-      photo: eliud.jpeg,
+      photo:"eliud.jpeg",
       bio: "Tratamientos dentales modernos y cómodos para devolver la salud y la estética a tu sonrisa.",
       credentials: ["Doctor en Cirugía Dental — UNAH", "Estética y Salud Oral", "Colegio de Cirujanos Dentistas de Honduras"],
       stats: [
