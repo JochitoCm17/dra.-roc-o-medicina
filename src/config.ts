@@ -67,7 +67,7 @@ export const config = {
       id: "rocio",
       name: "Dra. Rocío Méndez",
       specialty: "Medicina General e Interna",
-      photo: rocioImg,
+      photo: dra-rocio.png,
       bio: "Atención médica cercana, humana y sin prisas, enfocada en la prevención y bienestar integral.",
       credentials: ["Doctora en Medicina y Cirugía — UNAH", "Atención Médica Integral", "Colegio Médico de Honduras"],
       stats: [
