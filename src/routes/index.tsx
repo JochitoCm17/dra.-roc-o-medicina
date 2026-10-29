@@ -1,9 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState, type FormEvent, type ReactNode } from "react";
-import { motion, MotionConfig } from "framer-motion";
+import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
+import {
+  motion, MotionConfig, useScroll, useTransform, useInView, animate, useReducedMotion,
+  type Variants,
+} from "framer-motion";
 import {
   CalendarCheck, Phone, MapPin, Navigation, Clock, Stethoscope, HeartPulse,
-  ShieldCheck, Video, FileText, Award, MessageCircle, ArrowRight, Menu, X,
+  ShieldCheck, Video, FileText, Award, GraduationCap, BadgeCheck, Users,
+  MessageCircle, ArrowRight, ArrowUpRight, Menu, X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,12 +33,16 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-const fade = {
-  initial: { opacity: 0, y: 24 },
-  whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true, margin: "-80px" },
-  transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] as const },
+const ease = [0.22, 1, 0.36, 1] as const;
+const container: Variants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.1, delayChildren: 0.05 } },
 };
+const item: Variants = {
+  hidden: { opacity: 0, y: 28 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.7, ease } },
+};
+const stagger = { variants: container, initial: "hidden", whileInView: "show", viewport: { once: true, margin: "-80px" } } as const;
 
 function useNow() {
   const [now, setNow] = useState<Date | null>(null);
@@ -45,6 +53,8 @@ function useNow() {
   }, []);
   return now;
 }
+
+const tel = `tel:${config.contact.phone.replace(/\s/g, "")}`;
 
 function Index() {
   return (
@@ -63,7 +73,7 @@ function Index() {
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Escribir por WhatsApp"
-        className="fixed bottom-5 right-5 z-50 grid size-14 place-items-center rounded-full bg-success text-primary-foreground shadow-soft md:hidden"
+        className="animate-glow fixed bottom-5 right-5 z-50 grid size-14 place-items-center rounded-full bg-success text-primary-foreground shadow-soft md:hidden"
       >
         <MessageCircle className="size-7" />
       </a>
@@ -78,37 +88,62 @@ const links = [
   { href: "#ubicacion", label: "Ubicación" },
 ];
 
+function CtaButton({ children, href, type, className = "" }: { children: ReactNode; href?: string; type?: "submit"; className?: string }) {
+  const cls = `btn-shimmer rounded-full ${className}`;
+  return href ? (
+    <Button asChild size="lg" className={cls}><a href={href}><span className="relative z-10 flex items-center gap-2">{children}</span></a></Button>
+  ) : (
+    <Button type={type} size="lg" className={cls}><span className="relative z-10 flex items-center gap-2">{children}</span></Button>
+  );
+}
+
 function Navbar() {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const on = () => setScrolled(window.scrollY > 24);
+    on();
+    window.addEventListener("scroll", on, { passive: true });
+    return () => window.removeEventListener("scroll", on);
+  }, []);
   return (
-    <header className="fixed inset-x-0 top-4 z-40 px-4">
-      <nav className="glass mx-auto flex max-w-6xl items-center justify-between rounded-full border px-5 py-3 shadow-soft">
-        <a href="#" className="flex items-center gap-2 font-display text-lg font-semibold">
-          <span className="grid size-8 place-items-center rounded-full bg-primary text-primary-foreground">
-            <Stethoscope className="size-4" />
+    <motion.header
+      initial={{ y: -40, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.6, ease }}
+      className="fixed inset-x-0 top-3 z-40 px-4"
+    >
+      <nav className={`glass mx-auto flex max-w-5xl items-center justify-between rounded-full border px-3 py-1.5 transition-all duration-500 ${scrolled ? "shadow-nav border-border" : "border-transparent"}`}>
+        <a href="#" className="flex items-center gap-2 pl-1 font-display text-base font-semibold">
+          <span className="grid size-7 place-items-center rounded-full bg-gradient-deep text-primary-foreground">
+            <Stethoscope className="size-3.5" />
           </span>
           {config.doctor.shortName}
         </a>
-        <ul className="hidden gap-7 text-sm font-medium text-muted-foreground md:flex">
+        <ul className="hidden gap-1 text-sm font-medium text-muted-foreground md:flex">
           {links.map((l) => (
-            <li key={l.href}><a className="transition-colors hover:text-primary" href={l.href}>{l.label}</a></li>
+            <li key={l.href}>
+              <a className="rounded-full px-3 py-1.5 transition-colors hover:bg-accent hover:text-foreground" href={l.href}>{l.label}</a>
+            </li>
           ))}
         </ul>
         <div className="flex items-center gap-2">
-          <Button asChild className="rounded-full"><a href="#cita">Agendar cita</a></Button>
-          <button className="md:hidden" aria-label="Menú" onClick={() => setOpen(!open)}>
-            {open ? <X /> : <Menu />}
+          <Button asChild size="sm" className="btn-shimmer h-8 rounded-full px-4">
+            <a href="#cita"><span className="relative z-10">Agendar cita</span></a>
+          </Button>
+          <button className="p-1 md:hidden" aria-label="Menú" onClick={() => setOpen(!open)}>
+            {open ? <X className="size-5" /> : <Menu className="size-5" />}
           </button>
         </div>
       </nav>
       {open && (
-        <ul className="glass mx-auto mt-2 max-w-6xl space-y-1 rounded-2xl border p-3 md:hidden">
+        <motion.ul initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} className="glass mx-auto mt-2 max-w-5xl space-y-1 rounded-2xl border p-3 shadow-nav md:hidden">
           {links.map((l) => (
             <li key={l.href}><a onClick={() => setOpen(false)} className="block rounded-lg px-3 py-2 hover:bg-accent" href={l.href}>{l.label}</a></li>
           ))}
-        </ul>
+        </motion.ul>
       )}
-    </header>
+    </motion.header>
   );
 }
 
@@ -117,128 +152,171 @@ function OpenCard() {
   const open = now ? isOpenNow(now) : false;
   const today = now ? config.hours[now.getDay()] ?? null : null;
   return (
-    <div className="rounded-3xl border bg-card p-6 shadow-soft">
+    <div className="glass-card rounded-3xl p-5">
       <div className="flex items-center gap-3">
-        <span className="relative flex size-3">
-          {open && <span className="absolute inline-flex size-full animate-ping rounded-full bg-success opacity-60" />}
-          <span className={`relative inline-flex size-3 rounded-full ${open ? "bg-success" : "bg-coral"}`} />
-        </span>
+        <span className={`size-3 rounded-full ${open ? "animate-glow bg-success" : "bg-coral"}`} />
         <p className="font-semibold">Atención inmediata disponible</p>
       </div>
-      <p className="mt-3 text-sm text-muted-foreground">
+      <p className="mt-2 text-sm text-muted-foreground">
         {!now ? "Consultando horario…" : open
           ? `Abierto ahora · hasta las ${today?.close}`
           : today?.open ? `Cerrado ahora · hoy de ${today.open} a ${today.close}` : "Cerrado hoy · escríbenos y te respondemos pronto"}
       </p>
-      <a href={`tel:${config.contact.phone.replace(/\s/g, "")}`} className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-primary">
-        <Phone className="size-4" /> {config.contact.phone}
+      <a href={tel} className="group mt-3 inline-flex items-center gap-2 text-sm font-semibold text-primary">
+        <Phone className="size-4 transition-transform group-hover:rotate-12" /> {config.contact.phone}
       </a>
     </div>
   );
 }
 
 function Hero() {
+  const ref = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
+  const y = useTransform(scrollYProgress, [0, 1], [0, 90]);
+  const scale = useTransform(scrollYProgress, [0, 1], [1.08, 1.18]);
   return (
-    <section className="relative overflow-hidden px-4 pb-20 pt-36 md:pt-44">
-      <div className="pointer-events-none absolute -right-32 top-10 size-[28rem] rounded-full bg-accent blur-3xl" />
-      <div className="relative mx-auto grid max-w-6xl items-center gap-12 md:grid-cols-[1.2fr_1fr]">
-        <motion.div {...fade}>
-          <p className="mb-5 inline-flex items-center gap-2 rounded-full bg-secondary px-4 py-1.5 text-sm font-medium text-primary">
+    <section ref={ref} className="relative overflow-hidden px-4 pb-24 pt-32 md:pt-40">
+      <div className="pointer-events-none absolute -right-32 top-0 size-[32rem] rounded-full bg-accent blur-3xl" />
+      <div className="pointer-events-none absolute -left-40 bottom-0 size-[22rem] rounded-full bg-coral/15 blur-3xl" />
+      <div className="relative mx-auto grid max-w-6xl items-center gap-14 md:grid-cols-[1.2fr_1fr]">
+        <motion.div variants={container} initial="hidden" animate="show">
+          <motion.p variants={item} className="glass-card mb-6 inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-medium text-primary">
             <HeartPulse className="size-4" /> {config.doctor.specialty}
-          </p>
-          <h1 className="text-5xl font-medium leading-[1.05] md:text-7xl">
+          </motion.p>
+          <motion.h1 variants={item} className="text-5xl font-medium leading-[1.03] md:text-7xl">
             Medicina que te <em className="text-primary">escucha</em>, cuidado que <span className="text-coral">acompaña</span>.
-          </h1>
-          <p className="mt-6 max-w-lg text-lg text-muted-foreground">
+          </motion.h1>
+          <motion.p variants={item} className="mt-6 max-w-lg text-lg text-muted-foreground">
             Soy la {config.doctor.shortName}. Te ofrezco una atención cercana, sin prisas y basada en evidencia para ti y tu familia.
-          </p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Button asChild size="lg" className="rounded-full"><a href="#cita"><CalendarCheck /> Agendar cita</a></Button>
-            <Button asChild size="lg" variant="outline" className="rounded-full bg-transparent"><a href="#servicios">Ver servicios <ArrowRight /></a></Button>
-          </div>
+          </motion.p>
+          <motion.div variants={item} className="mt-9 flex flex-wrap gap-3">
+            <CtaButton href="#cita"><CalendarCheck className="size-4" /> Agendar cita</CtaButton>
+            <Button asChild size="lg" variant="outline" className="group glass-card rounded-full">
+              <a href="#servicios">Ver servicios <ArrowRight className="transition-transform group-hover:translate-x-1" /></a>
+            </Button>
+          </motion.div>
         </motion.div>
-        <motion.div {...fade} transition={{ ...fade.transition, delay: 0.15 }} className="relative">
-          <img src={drImg} alt={`Retrato de la ${config.doctor.name}`} width={896} height={1120} className="aspect-[4/5] w-full rounded-[2rem] object-cover shadow-soft" />
-          <div className="absolute -bottom-8 -left-4 w-[85%] md:-left-12">
-            <OpenCard />
+        <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9, ease, delay: 0.2 }} className="relative">
+          <div className="overflow-hidden rounded-[2rem] shadow-soft">
+            <motion.img style={{ y, scale }} src={drImg} alt={`Retrato de la ${config.doctor.name}`} width={896} height={1120} className="aspect-[4/5] w-full object-cover" />
           </div>
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, ease, delay: 0.6 }} className="absolute -bottom-8 -left-4 w-[85%] md:-left-12">
+            <OpenCard />
+          </motion.div>
         </motion.div>
       </div>
     </section>
   );
 }
 
-const icons: typeof Stethoscope[] = [Stethoscope, HeartPulse, ShieldCheck, Video, FileText];
+const icons: (typeof Stethoscope)[] = [Stethoscope, HeartPulse, ShieldCheck, Video, FileText];
 
-function SectionHead({ kicker, title }: { kicker: string; title: ReactNode }) {
+function SectionHead({ kicker, title, children }: { kicker: string; title: ReactNode; children?: ReactNode }) {
   return (
-    <motion.div {...fade} className="mb-12 max-w-2xl">
-      <p className="mb-3 text-sm font-semibold uppercase tracking-widest text-coral">{kicker}</p>
-      <h2 className="text-4xl font-medium md:text-5xl">{title}</h2>
+    <motion.div {...stagger} className="mb-12 max-w-2xl">
+      <motion.p variants={item} className="mb-3 text-sm font-semibold uppercase tracking-widest text-coral">{kicker}</motion.p>
+      <motion.h2 variants={item} className="text-4xl font-medium md:text-5xl">{title}</motion.h2>
+      {children && <motion.div variants={item}>{children}</motion.div>}
     </motion.div>
   );
 }
 
+const hoverCard = { whileHover: { y: -8, scale: 1.02 }, transition: { type: "spring", stiffness: 300, damping: 22 } } as const;
+
 function Services() {
-  const [big, ...rest] = config.services as [typeof config.services[number], ...typeof config.services];
-  const BigIcon = Stethoscope;
+  const [big, ...rest] = config.services as [(typeof config.services)[number], ...typeof config.services];
   return (
     <section id="servicios" className="scroll-mt-28 px-4 py-24">
       <div className="mx-auto max-w-6xl">
         <SectionHead kicker="Servicios" title="Cuidado integral, en un solo lugar" />
-        <div className="grid gap-4 md:grid-cols-4 md:grid-rows-2">
-          <motion.article {...fade} className="flex flex-col justify-between rounded-3xl bg-ink p-8 text-ink-foreground md:col-span-2 md:row-span-2">
-            <span className="grid size-14 place-items-center rounded-2xl bg-primary"><BigIcon className="size-7" /></span>
-            <div className="mt-16">
+        <motion.div {...stagger} className="grid gap-4 md:grid-cols-4 md:grid-rows-2">
+          <motion.article variants={item} {...hoverCard}
+            className="group relative flex flex-col justify-between overflow-hidden rounded-3xl bg-gradient-deep p-8 text-primary-foreground shadow-xl transition-shadow hover:shadow-glow md:col-span-2 md:row-span-2">
+            <div className="pointer-events-none absolute -right-20 -top-20 size-64 rounded-full bg-primary-foreground/10 blur-2xl transition-transform duration-700 group-hover:scale-150" />
+            <span className="relative grid size-14 place-items-center rounded-2xl bg-primary-foreground/15 backdrop-blur-md"><Stethoscope className="size-7" /></span>
+            <div className="relative mt-16">
               <h3 className="text-3xl md:text-4xl">{big.title}</h3>
-              <p className="mt-3 max-w-sm opacity-80">{big.desc}</p>
-              <a href="#cita" className="mt-6 inline-flex items-center gap-2 font-semibold text-coral">Reservar ahora <ArrowRight className="size-4" /></a>
+              <p className="mt-3 max-w-sm opacity-85">{big.desc}</p>
+              <a href="#cita" className="mt-6 inline-flex items-center gap-2 font-semibold text-coral">
+                Reservar ahora <ArrowUpRight className="size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+              </a>
             </div>
           </motion.article>
           {rest.map((s, i) => {
             const Icon = icons[i + 1] ?? Stethoscope;
             return (
-              <motion.article key={s.title} {...fade} transition={{ ...fade.transition, delay: 0.08 * (i + 1) }}
-                className="rounded-3xl border bg-card p-6 transition-transform hover:-translate-y-1">
-                <Icon className="size-6 text-primary" />
+              <motion.article key={s.title} variants={item} {...hoverCard}
+                className="glass-card group rounded-3xl p-6 transition-shadow hover:shadow-glow">
+                <span className="grid size-11 place-items-center rounded-xl bg-secondary text-primary transition-colors duration-300 group-hover:bg-primary group-hover:text-primary-foreground">
+                  <Icon className="size-5" />
+                </span>
                 <h3 className="mt-6 text-xl">{s.title}</h3>
                 <p className="mt-2 text-sm text-muted-foreground">{s.desc}</p>
               </motion.article>
             );
           })}
-        </div>
+        </motion.div>
       </div>
     </section>
   );
 }
 
+function Counter({ value }: { value: string }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-60px" });
+  const reduce = useReducedMotion();
+  const target = parseFloat(value.replace(/,/g, ""));
+  const decimals = value.includes(".") ? 1 : 0;
+  const suffix = value.replace(/[\d.,]/g, "");
+  const fmt = (n: number) => n.toLocaleString("es-GT", { minimumFractionDigits: decimals, maximumFractionDigits: decimals }) + suffix;
+  const [display, setDisplay] = useState(fmt(0));
+  useEffect(() => {
+    if (!inView) return;
+    if (reduce) { setDisplay(fmt(target)); return; }
+    const c = animate(0, target, { duration: 2, ease, onUpdate: (v) => setDisplay(fmt(v)) });
+    return () => c.stop();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [inView]);
+  return <span ref={ref}>{display}</span>;
+}
+
+const credIcons = [GraduationCap, Award, BadgeCheck, Users];
+
 function Profile() {
   const d = config.doctor;
   return (
-    <section id="perfil" className="scroll-mt-28 bg-secondary px-4 py-24">
-      <div className="mx-auto grid max-w-6xl gap-12 md:grid-cols-2">
-        <motion.div {...fade}>
-          <p className="mb-3 text-sm font-semibold uppercase tracking-widest text-coral">Sobre mí</p>
-          <h2 className="text-4xl font-medium md:text-5xl">{d.name}</h2>
-          <blockquote className="mt-8 border-l-4 border-coral pl-6 font-display text-2xl italic leading-snug">
+    <section id="perfil" className="relative scroll-mt-28 overflow-hidden bg-secondary px-4 py-24">
+      <div className="pointer-events-none absolute right-0 top-1/3 size-96 rounded-full bg-primary/10 blur-3xl" />
+      <div className="relative mx-auto grid max-w-6xl gap-12 md:grid-cols-2">
+        <motion.div {...stagger}>
+          <motion.p variants={item} className="mb-3 text-sm font-semibold uppercase tracking-widest text-coral">Sobre mí</motion.p>
+          <motion.h2 variants={item} className="text-4xl font-medium md:text-5xl">{d.name}</motion.h2>
+          <motion.blockquote variants={item} className="mt-8 border-l-4 border-coral pl-6 font-display text-2xl italic leading-snug">
             “{d.philosophy}”
-          </blockquote>
-          <div className="mt-10 grid grid-cols-3 gap-4">
+          </motion.blockquote>
+          <motion.div variants={item} className="mt-10 grid grid-cols-3 gap-3">
             {d.stats.map((s) => (
-              <div key={s.label}>
-                <p className="font-display text-4xl text-primary">{s.value}</p>
-                <p className="mt-1 text-sm text-muted-foreground">{s.label}</p>
+              <div key={s.label} className="glass-card rounded-2xl p-4">
+                <p className="font-display text-3xl text-primary md:text-4xl"><Counter value={s.value} /></p>
+                <p className="mt-1 text-xs text-muted-foreground md:text-sm">{s.label}</p>
               </div>
             ))}
-          </div>
+          </motion.div>
         </motion.div>
-        <motion.ul {...fade} className="space-y-3 self-center">
-          {d.credentials.map((c) => (
-            <li key={c} className="flex gap-4 rounded-2xl bg-card p-5">
-              <Award className="size-5 shrink-0 text-primary" />
-              <span>{c}</span>
-            </li>
-          ))}
+        <motion.ul {...stagger} className="space-y-3 self-center">
+          {d.credentials.map((c, i) => {
+            const Icon = credIcons[i % credIcons.length] ?? Award;
+            return (
+              <motion.li key={c} variants={item} whileHover={{ x: 6 }} transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                className="glass-card group flex cursor-default items-center gap-4 rounded-2xl p-4 transition-shadow hover:shadow-glow">
+                <motion.span whileHover={{ rotate: -10, scale: 1.1 }}
+                  className="grid size-11 shrink-0 place-items-center rounded-xl bg-gradient-deep text-primary-foreground">
+                  <Icon className="size-5" />
+                </motion.span>
+                <span className="text-sm font-medium md:text-base">{c}</span>
+              </motion.li>
+            );
+          })}
         </motion.ul>
       </div>
     </section>
@@ -252,29 +330,34 @@ function Booking() {
     e.preventDefault();
     window.open(waLink(buildWhatsAppMessage(form)), "_blank", "noopener,noreferrer");
   };
-  const selectCls = "flex h-11 w-full rounded-md border border-input bg-background px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+  const field = "field-teal h-12 rounded-xl bg-background/60";
   return (
     <section id="cita" className="scroll-mt-28 px-4 py-24">
       <div className="mx-auto grid max-w-6xl gap-12 md:grid-cols-[1fr_1.3fr]">
         <div>
-          <SectionHead kicker="Agenda" title="Reserva tu cita en minutos" />
-          <p className="-mt-6 text-muted-foreground">Completa el formulario y se abrirá WhatsApp con tu solicitud lista para enviar. También puedes elegir un horario directamente en mi calendario.</p>
-          <Button asChild variant="outline" size="lg" className="mt-8 rounded-full bg-transparent">
-            <a href={config.contact.calUrl} target="_blank" rel="noopener noreferrer"><CalendarCheck /> Ver calendario en Cal.com</a>
+          <SectionHead kicker="Agenda" title="Reserva tu cita en minutos">
+            <p className="mt-4 text-muted-foreground">Completa el formulario y se abrirá WhatsApp con tu solicitud lista para enviar. También puedes elegir un horario directamente en mi calendario.</p>
+          </SectionHead>
+          <Button asChild variant="outline" size="lg" className="glass-card group -mt-4 rounded-full">
+            <a href={config.contact.calUrl} target="_blank" rel="noopener noreferrer">
+              <CalendarCheck /> Ver calendario en Cal.com <ArrowUpRight className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+            </a>
           </Button>
         </div>
-        <motion.form {...fade} onSubmit={submit} className="grid gap-5 rounded-3xl border bg-card p-6 shadow-soft md:grid-cols-2 md:p-8">
-          <div className="space-y-2 md:col-span-2"><Label htmlFor="nombre">Nombre completo</Label><Input id="nombre" required className="h-11" value={form.nombre} onChange={set("nombre")} /></div>
-          <div className="space-y-2"><Label htmlFor="fecha">Fecha</Label><Input id="fecha" type="date" required className="h-11" value={form.fecha} onChange={set("fecha")} /></div>
-          <div className="space-y-2"><Label htmlFor="hora">Hora</Label><Input id="hora" type="time" required className="h-11" value={form.hora} onChange={set("hora")} /></div>
-          <div className="space-y-2 md:col-span-2">
+        <motion.form {...stagger} onSubmit={submit} className="glass-card grid gap-5 rounded-3xl p-6 md:grid-cols-2 md:p-8">
+          <motion.div variants={item} className="space-y-2 md:col-span-2"><Label htmlFor="nombre">Nombre completo</Label><Input id="nombre" required className={field} value={form.nombre} onChange={set("nombre")} /></motion.div>
+          <motion.div variants={item} className="space-y-2"><Label htmlFor="fecha">Fecha</Label><Input id="fecha" type="date" required className={field} value={form.fecha} onChange={set("fecha")} /></motion.div>
+          <motion.div variants={item} className="space-y-2"><Label htmlFor="hora">Hora</Label><Input id="hora" type="time" required className={field} value={form.hora} onChange={set("hora")} /></motion.div>
+          <motion.div variants={item} className="space-y-2 md:col-span-2">
             <Label htmlFor="servicio">Servicio</Label>
-            <select id="servicio" className={selectCls} value={form.servicio} onChange={set("servicio")}>
+            <select id="servicio" className={`${field} flex w-full border border-input px-3 text-sm`} value={form.servicio} onChange={set("servicio")}>
               {config.services.map((s) => <option key={s.title}>{s.title}</option>)}
             </select>
-          </div>
-          <div className="space-y-2 md:col-span-2"><Label htmlFor="mensaje">Mensaje (opcional)</Label><Textarea id="mensaje" rows={4} value={form.mensaje} onChange={set("mensaje")} /></div>
-          <Button type="submit" size="lg" className="rounded-full md:col-span-2"><MessageCircle /> Agendar Cita</Button>
+          </motion.div>
+          <motion.div variants={item} className="space-y-2 md:col-span-2"><Label htmlFor="mensaje">Mensaje (opcional)</Label><Textarea id="mensaje" rows={4} className="field-teal rounded-xl bg-background/60" value={form.mensaje} onChange={set("mensaje")} /></motion.div>
+          <motion.div variants={item} className="md:col-span-2">
+            <CtaButton type="submit" className="h-12 w-full"><MessageCircle className="size-4" /> Agendar Cita</CtaButton>
+          </motion.div>
         </motion.form>
       </div>
     </section>
@@ -289,19 +372,19 @@ function Location() {
     <section id="ubicacion" className="scroll-mt-28 px-4 py-24">
       <div className="mx-auto max-w-6xl">
         <SectionHead kicker="Ubicación" title="Te esperamos en el consultorio" />
-        <div className="grid gap-6 md:grid-cols-[1.4fr_1fr]">
-          <div className="overflow-hidden rounded-3xl border shadow-soft">
-            <iframe title="Mapa del consultorio" className="h-[420px] w-full" loading="lazy"
+        <motion.div {...stagger} className="grid gap-6 md:grid-cols-[1.4fr_1fr]">
+          <motion.div variants={item} className="overflow-hidden rounded-3xl border shadow-xl">
+            <iframe title="Mapa del consultorio" className="h-[440px] w-full" loading="lazy"
               src={`https://maps.google.com/maps?q=${lat},${lng}&z=16&output=embed`} />
-          </div>
-          <div className="rounded-3xl border bg-card p-6">
+          </motion.div>
+          <motion.div variants={item} className="glass-card rounded-3xl p-6">
             <p className="flex gap-3"><MapPin className="size-5 shrink-0 text-primary" /> {address}, {city}</p>
             <h3 className="mt-6 flex items-center gap-2 text-xl"><Clock className="size-5 text-primary" /> Horarios</h3>
             <ul className="mt-3 space-y-1 text-sm">
               {config.hours.map((h, i) => {
                 const today = now?.getDay() === i;
                 return (
-                  <li key={h.day} className={`flex justify-between rounded-lg px-3 py-2 ${today ? "bg-primary font-semibold text-primary-foreground" : ""}`}>
+                  <li key={h.day} className={`flex justify-between rounded-lg px-3 py-2 transition-colors ${today ? "bg-gradient-deep font-semibold text-primary-foreground shadow-glow" : "hover:bg-accent"}`}>
                     <span>{h.day}{today && " · hoy"}</span>
                     <span>{h.open ? `${h.open} – ${h.close}` : "Cerrado"}</span>
                   </li>
@@ -309,12 +392,12 @@ function Location() {
               })}
             </ul>
             <div className="mt-6 grid grid-cols-3 gap-2">
-              <Button asChild variant="outline" className="rounded-full bg-transparent"><a href={`https://www.google.com/maps/search/?api=1&query=${lat},${lng}`} target="_blank" rel="noopener noreferrer"><MapPin /> Maps</a></Button>
-              <Button asChild variant="outline" className="rounded-full bg-transparent"><a href={`https://waze.com/ul?ll=${lat},${lng}&navigate=yes&q=${q}`} target="_blank" rel="noopener noreferrer"><Navigation /> Waze</a></Button>
-              <Button asChild className="rounded-full"><a href={`tel:${config.contact.phone.replace(/\s/g, "")}`}><Phone /> Llamar</a></Button>
+              <Button asChild variant="outline" className="rounded-full bg-transparent transition-transform hover:-translate-y-0.5"><a href={`https://www.google.com/maps/search/?api=1&query=${lat},${lng}`} target="_blank" rel="noopener noreferrer"><MapPin /> Maps</a></Button>
+              <Button asChild variant="outline" className="rounded-full bg-transparent transition-transform hover:-translate-y-0.5"><a href={`https://waze.com/ul?ll=${lat},${lng}&navigate=yes&q=${q}`} target="_blank" rel="noopener noreferrer"><Navigation /> Waze</a></Button>
+              <Button asChild className="btn-shimmer rounded-full"><a href={tel}><span className="relative z-10 flex items-center gap-2"><Phone className="size-4" /> Llamar</span></a></Button>
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </div>
     </section>
   );
@@ -322,22 +405,22 @@ function Location() {
 
 function Footer() {
   return (
-    <footer className="bg-ink px-4 pb-24 pt-16 text-ink-foreground md:pb-10">
-      <div className="mx-auto grid max-w-6xl gap-10 md:grid-cols-3">
-        <div>
+    <footer className="bg-gradient-deep px-4 pb-24 pt-16 text-primary-foreground md:pb-10">
+      <motion.div {...stagger} className="mx-auto grid max-w-6xl gap-10 md:grid-cols-3">
+        <motion.div variants={item}>
           <p className="font-display text-2xl">{config.doctor.name}</p>
           <p className="mt-2 text-sm opacity-70">{config.doctor.specialty}</p>
-        </div>
-        <ul className="space-y-2 text-sm">
-          {links.map((l) => <li key={l.href}><a className="opacity-80 hover:text-coral hover:opacity-100" href={l.href}>{l.label}</a></li>)}
-        </ul>
-        <div className="space-y-2 text-sm opacity-80">
+        </motion.div>
+        <motion.ul variants={item} className="space-y-2 text-sm">
+          {links.map((l) => <li key={l.href}><a className="opacity-80 transition hover:text-coral hover:opacity-100" href={l.href}>{l.label}</a></li>)}
+        </motion.ul>
+        <motion.div variants={item} className="space-y-2 text-sm opacity-80">
           <p>{config.contact.phone}</p>
           <p>{config.contact.email}</p>
           <p>{config.location.city}</p>
-        </div>
-      </div>
-      <p className="mx-auto mt-12 max-w-6xl border-t border-ink-foreground/15 pt-6 text-xs opacity-60">
+        </motion.div>
+      </motion.div>
+      <p className="mx-auto mt-12 max-w-6xl border-t border-primary-foreground/15 pt-6 text-xs opacity-60">
         Aviso legal: la información de este sitio es de carácter informativo y no sustituye una consulta médica. En caso de emergencia, acude al servicio de urgencias más cercano. © {new Date().getFullYear()} {config.doctor.name}.
       </p>
     </footer>
