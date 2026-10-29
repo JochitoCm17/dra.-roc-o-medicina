@@ -65,8 +65,8 @@ export const config = {
   doctors: [
     {
       id: "rocio",
-      name: "Dra. Rocío Méndez",
-      specialty: "Medicina General e Interna",
+      name: "Dra. Rocío Murillo",
+      specialty: "Medicina General",
       photo: "dra-rocio.jpg.png",
       bio: "Atención médica cercana, humana y sin prisas, enfocada en la prevención y bienestar integral.",
       credentials: ["Doctora en Medicina y Cirugía — UNAH", "Atención Médica Integral", "Colegio Médico de Honduras"],
@@ -79,7 +79,7 @@ export const config = {
       id: "eliud",
       name: "Dr. Eliud Estrada",
       specialty: "Odontología Integral y Estética Dental",
-      photo: eliudImg,
+      photo: eliud.jpeg,
       bio: "Tratamientos dentales modernos y cómodos para devolver la salud y la estética a tu sonrisa.",
       credentials: ["Doctor en Cirugía Dental — UNAH", "Estética y Salud Oral", "Colegio de Cirujanos Dentistas de Honduras"],
       stats: [
