@@ -63,8 +63,8 @@ export function buildWhatsAppMessage(f: { nombre: string; fecha: string; hora: s
     `Hola ${config.doctor.shortName}, quisiera agendar una cita.`,
     ``,
     `*Nombre:* ${f.nombre}`,
-    `*Fecha:* ${f.fecha}`,
-    `*Hora:* ${f.hora}`,
+    `*Fecha:* ${formatFecha(f.fecha)}`,
+    `*Hora:* ${formatHora(f.hora)}`,
     `*Servicio:* ${f.servicio}`,
     f.mensaje ? `*Mensaje:* ${f.mensaje}` : "",
   ].filter(Boolean).join("\n");
@@ -72,3 +72,16 @@ export function buildWhatsAppMessage(f: { nombre: string; fecha: string; hora: s
 
 export const waLink = (text?: string) =>
   `https://wa.me/${config.contact.whatsapp}${text ? `?text=${encodeURIComponent(text)}` : ""}`;
+
+export function formatFecha(iso: string) {
+  const [y, m, d] = iso.split("-").map(Number);
+  if (!y || !m || !d) return iso;
+  return new Date(y, m - 1, d).toLocaleDateString("es-GT", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+}
+
+export function formatHora(hhmm: string) {
+  const [h, m] = hhmm.split(":").map(Number);
+  if (h === undefined || m === undefined || isNaN(h)) return hhmm;
+  const ap = h < 12 ? "a. m." : "p. m.";
+  return `${((h + 11) % 12) + 1}:${String(m).padStart(2, "0")} ${ap}`;
+}

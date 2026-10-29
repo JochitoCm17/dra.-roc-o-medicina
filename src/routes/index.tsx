@@ -68,16 +68,32 @@ function Index() {
         <Location />
       </main>
       <Footer />
+      <FloatingWhatsApp />
+    </MotionConfig>
+  );
+}
+
+function FloatingWhatsApp() {
+  const [hidden, setHidden] = useState(false);
+  useEffect(() => {
+    const el = document.getElementById("cita");
+    if (!el) return;
+    const io = new IntersectionObserver(([e]) => setHidden(!!e?.isIntersecting), { threshold: 0.05 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+  return (
       <a
         href={waLink()}
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Escribir por WhatsApp"
-        className="animate-glow fixed bottom-5 right-5 z-50 grid size-14 place-items-center rounded-full bg-success text-primary-foreground shadow-soft md:hidden"
+        aria-hidden={hidden}
+        tabIndex={hidden ? -1 : 0}
+        className={`animate-glow fixed bottom-5 right-5 z-50 grid size-14 place-items-center rounded-full bg-success text-primary-foreground shadow-soft transition-all duration-300 md:hidden ${hidden ? "pointer-events-none translate-y-4 opacity-0" : ""}`}
       >
         <MessageCircle className="size-7" />
       </a>
-    </MotionConfig>
   );
 }
 
@@ -330,7 +346,9 @@ function Booking() {
     e.preventDefault();
     window.open(waLink(buildWhatsAppMessage(form)), "_blank", "noopener,noreferrer");
   };
-  const field = "field-teal h-12 rounded-xl bg-background/60";
+  const field = "field-teal h-12 rounded-xl bg-background/60 text-base md:text-sm";
+  const [minDate, setMinDate] = useState<string>();
+  useEffect(() => { const d = new Date(); setMinDate(new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10)); }, []);
   return (
     <section id="cita" className="scroll-mt-28 px-4 py-24">
       <div className="mx-auto grid max-w-6xl gap-12 md:grid-cols-[1fr_1.3fr]">
@@ -346,15 +364,15 @@ function Booking() {
         </div>
         <motion.form {...stagger} onSubmit={submit} className="glass-card grid gap-5 rounded-3xl p-6 md:grid-cols-2 md:p-8">
           <motion.div variants={item} className="space-y-2 md:col-span-2"><Label htmlFor="nombre">Nombre completo</Label><Input id="nombre" required className={field} value={form.nombre} onChange={set("nombre")} /></motion.div>
-          <motion.div variants={item} className="space-y-2"><Label htmlFor="fecha">Fecha</Label><Input id="fecha" type="date" required className={field} value={form.fecha} onChange={set("fecha")} /></motion.div>
+          <motion.div variants={item} className="space-y-2"><Label htmlFor="fecha">Fecha</Label><Input id="fecha" type="date" required min={minDate} className={field} value={form.fecha} onChange={set("fecha")} /></motion.div>
           <motion.div variants={item} className="space-y-2"><Label htmlFor="hora">Hora</Label><Input id="hora" type="time" required className={field} value={form.hora} onChange={set("hora")} /></motion.div>
           <motion.div variants={item} className="space-y-2 md:col-span-2">
             <Label htmlFor="servicio">Servicio</Label>
-            <select id="servicio" className={`${field} flex w-full border border-input px-3 text-sm`} value={form.servicio} onChange={set("servicio")}>
+            <select id="servicio" className={`${field} flex w-full border border-input px-3`} value={form.servicio} onChange={set("servicio")}>
               {config.services.map((s) => <option key={s.title}>{s.title}</option>)}
             </select>
           </motion.div>
-          <motion.div variants={item} className="space-y-2 md:col-span-2"><Label htmlFor="mensaje">Mensaje (opcional)</Label><Textarea id="mensaje" rows={4} className="field-teal rounded-xl bg-background/60" value={form.mensaje} onChange={set("mensaje")} /></motion.div>
+          <motion.div variants={item} className="space-y-2 md:col-span-2"><Label htmlFor="mensaje">Mensaje (opcional)</Label><Textarea id="mensaje" rows={4} className="field-teal rounded-xl bg-background/60 text-base md:text-sm" value={form.mensaje} onChange={set("mensaje")} /></motion.div>
           <motion.div variants={item} className="md:col-span-2">
             <CtaButton type="submit" className="h-12 w-full"><MessageCircle className="size-4" /> Agendar Cita</CtaButton>
           </motion.div>
