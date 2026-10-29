@@ -88,8 +88,9 @@ function FloatingWhatsApp() {
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Escribir por WhatsApp"
-        className={`animate-glow fixed bottom-5 transition-all duration-300 ${hidden ? "pointer-events-none translate-y-4 opacity-0" : ""}`}
-        data-x=" right-5 z-50 grid size-14 place-items-center rounded-full bg-success text-primary-foreground shadow-soft md:hidden" 
+        aria-hidden={hidden}
+        tabIndex={hidden ? -1 : 0}
+        className={`animate-glow fixed bottom-5 right-5 z-50 grid size-14 place-items-center rounded-full bg-success text-primary-foreground shadow-soft transition-all duration-300 md:hidden ${hidden ? "pointer-events-none translate-y-4 opacity-0" : ""}`}
       >
         <MessageCircle className="size-7" />
       </a>
